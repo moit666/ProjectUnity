@@ -67,9 +67,11 @@
     <Compile Include="Assets\Mini First Person Controller\Scripts\Components\FirstPersonAudio.cs" />
     <Compile Include="Assets\scripts\GameManager.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\Components\Jump.cs" />
+    <Compile Include="Assets\scripts\MP3Player.cs" />
     <Compile Include="Assets\scripts\IInteractable.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\Components\Crouch.cs" />
     <Compile Include="Assets\scripts\SWITCH_lamps.cs" />
+    <Compile Include="Assets\scripts\PlayerHand.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\Components\GroundCheck.cs" />
     <Compile Include="Assets\scripts\diary.cs" />
     <Compile Include="Assets\scripts\PlayerInteraction.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Assets\PSXShaderKit\Scripts\PSXShaderManager.cs" />
     <Compile Include="Assets\scripts\DialogueManager.cs" />
     <Compile Include="Assets\scripts\Bad_Trigg.cs" />
+    <Compile Include="Assets\scripts\Record.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\FirstPersonMovement.cs" />
     <Compile Include="Assets\scripts\Pleer_item.cs" />
     <Compile Include="Assets\Mini First Person Controller\Scripts\FirstPersonLook.cs" />
