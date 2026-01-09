@@ -1,97 +1,87 @@
+using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // если используешь TextMeshPro
 
 public class MP3Player : MonoBehaviour
 {
+    [Header("Audio")]
     public AudioSource audioSource;
-    public AudioClip[] playlist;
-    public TMP_Text trackInfo; // текст на плеере
 
-    private int currentTrack = 0;
-    private bool isPlayerActive = false; // плеер не активен по умолчанию
+    [Header("Controls")]
+    public KeyCode togglePlayerKey = KeyCode.E;      // достать / убрать плеер
+    public KeyCode playPauseKey = KeyCode.Space;     // play / pause
+    public KeyCode nextKey = KeyCode.RightArrow;     // следующий трек
+
+    [Header("State")]
+    public bool playerInHand = false;                // плеер в руках?
+
+    public List<AudioClip> playlist = new List<AudioClip>();
+    private int currentTrackIndex = 0;
 
     void Start()
     {
-        // Не запускаем трек сразу
-        audioSource.Stop();
-        UpdateUI();
+        audioSource.playOnAwake = false;
+        gameObject.SetActive(false); // плеер изначально убран
     }
 
     void Update()
     {
-        // Игрок достал плеер
-        if (Input.GetKeyDown(KeyCode.R))
+        // достать / убрать плеер
+        if (Input.GetKeyDown(togglePlayerKey))
         {
-            isPlayerActive = !isPlayerActive;
-
-            // Если плеер включается впервые и есть треки
-            if (isPlayerActive && audioSource.clip == null && playlist.Length > 0)
-            {
-                audioSource.clip = playlist[currentTrack];
-            }
+            TogglePlayer();
         }
 
-        if (!isPlayerActive) return; // если плеер не в руках — ничего не делаем
+        if (!playerInHand) return;
 
-        // Управление треком
-        if(Input.GetKeyDown(KeyCode.Space))
-            PlayPause();
+        // play / pause
+        if (Input.GetKeyDown(playPauseKey))
+        {
+            if (audioSource.isPlaying)
+                audioSource.Pause();
+            else
+                PlayCurrent();
+        }
 
-        if(Input.GetKeyDown(KeyCode.RightArrow))
+        // следующий трек
+        if (Input.GetKeyDown(nextKey))
+        {
             NextTrack();
-
-        if(Input.GetKeyDown(KeyCode.LeftArrow))
-            PreviousTrack();
-
-        UpdateUI();
-    }
-
-    void PlayTrack(int index)
-    {
-        if(index < 0 || index >= playlist.Length) return;
-
-        audioSource.clip = playlist[index];
-        audioSource.Play();
-    }
-
-    void PlayPause()
-    {
-        if(audioSource.isPlaying)
-            audioSource.Pause();
-        else
-        {
-            if(audioSource.clip == null && playlist.Length > 0)
-                audioSource.clip = playlist[currentTrack];
-
-            audioSource.Play();
         }
+    }
+
+    void TogglePlayer()
+    {
+        playerInHand = !playerInHand;
+        gameObject.SetActive(playerInHand);
+
+        if (!playerInHand)
+            audioSource.Pause();
+    }
+
+    // ===== ПЛЕЙЛИСТ =====
+
+    public void AddTrack(AudioClip clip)
+    {
+        if (!playlist.Contains(clip))
+        {
+            playlist.Add(clip);
+            Debug.Log("Добавлен трек: " + clip.name);
+        }
+    }
+
+    void PlayCurrent()
+    {
+        if (playlist.Count == 0) return;
+
+        audioSource.clip = playlist[currentTrackIndex];
+        audioSource.Play();
     }
 
     void NextTrack()
     {
-        if (playlist.Length == 0) return;
+        if (playlist.Count == 0) return;
 
-        currentTrack = (currentTrack + 1) % playlist.Length;
-        PlayTrack(currentTrack);
-    }
-
-    void PreviousTrack()
-    {
-        if (playlist.Length == 0) return;
-
-        currentTrack--;
-        if(currentTrack < 0) currentTrack = playlist.Length - 1;
-        PlayTrack(currentTrack);
-    }
-
-    void UpdateUI()
-    {
-        if(trackInfo != null)
-        {
-            if (playlist.Length > 0 && audioSource.clip != null)
-                trackInfo.text = $"Track: {playlist[currentTrack].name}\nTime: {audioSource.time:F1}s";
-            else
-                trackInfo.text = "No track playing";
-        }
+        currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
+        PlayCurrent();
     }
 }

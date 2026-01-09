@@ -11,7 +11,18 @@ public class Record : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        MP3Player player = FindObjectOfType<MP3Player>();
+        if (player != null)
+        {
+            player.AddTrack(clip);
+            Destroy(gameObject);
+        }
 
     }
 
 }
+
+
+
+
+
