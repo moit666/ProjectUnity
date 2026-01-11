@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class MP3Player : MonoBehaviour
 {
@@ -7,12 +8,15 @@ public class MP3Player : MonoBehaviour
     public AudioSource audioSource;
 
     [Header("Controls")]
-    public KeyCode togglePlayerKey = KeyCode.E;      // достать / убрать плеер
-    public KeyCode playPauseKey = KeyCode.Space;     // play / pause
-    public KeyCode nextKey = KeyCode.RightArrow;     // следующий трек
+    public KeyCode togglePlayerKey = KeyCode.E;
+    public KeyCode playPauseKey = KeyCode.Space;
+    public KeyCode nextKey = KeyCode.RightArrow;
 
     [Header("State")]
-    public bool playerInHand = false;                // плеер в руках?
+    public bool playerInHand = false;
+
+    [Header("UI")]
+    public TextMeshProUGUI trackNameText;
 
     public List<AudioClip> playlist = new List<AudioClip>();
     private int currentTrackIndex = 0;
@@ -20,20 +24,17 @@ public class MP3Player : MonoBehaviour
     void Start()
     {
         audioSource.playOnAwake = false;
-        gameObject.SetActive(false); // плеер изначально убран
+        gameObject.SetActive(false);
+        UpdateTrackName();
     }
 
     void Update()
     {
-        // достать / убрать плеер
         if (Input.GetKeyDown(togglePlayerKey))
-        {
             TogglePlayer();
-        }
 
         if (!playerInHand) return;
 
-        // play / pause
         if (Input.GetKeyDown(playPauseKey))
         {
             if (audioSource.isPlaying)
@@ -42,11 +43,8 @@ public class MP3Player : MonoBehaviour
                 PlayCurrent();
         }
 
-        // следующий трек
         if (Input.GetKeyDown(nextKey))
-        {
             NextTrack();
-        }
     }
 
     void TogglePlayer()
@@ -66,6 +64,7 @@ public class MP3Player : MonoBehaviour
         {
             playlist.Add(clip);
             Debug.Log("Добавлен трек: " + clip.name);
+            UpdateTrackName();
         }
     }
 
@@ -75,6 +74,7 @@ public class MP3Player : MonoBehaviour
 
         audioSource.clip = playlist[currentTrackIndex];
         audioSource.Play();
+        UpdateTrackName();
     }
 
     void NextTrack()
@@ -83,5 +83,15 @@ public class MP3Player : MonoBehaviour
 
         currentTrackIndex = (currentTrackIndex + 1) % playlist.Count;
         PlayCurrent();
+    }
+
+    void UpdateTrackName()
+    {
+        if (trackNameText == null) return;
+
+        if (playlist.Count == 0)
+            trackNameText.text = "NO TRACK";
+        else
+            trackNameText.text = playlist[currentTrackIndex].name;
     }
 }
